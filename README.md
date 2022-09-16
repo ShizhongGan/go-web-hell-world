@@ -4,7 +4,7 @@
 
 ## Task 1: Update system
 
-按照要求，在官网下载`ubuntu18.04.6`镜像，采用 virtualbox 创建虚拟机(2C,2G)，并按要求设置端口转发规则。本地可通过`22222`端口ssh登陆虚拟机。具体结果如下图所示：
+按照要求，在官网下载`ubuntu18.04.6`镜像，采用 virtualbox 创建虚拟机(3C,4G，太低k8s会卡)，并按要求设置端口转发规则。本地可通过`22222`端口ssh登陆虚拟机。具体结果如下图所示：
 
 ![task1](./img/task_1.png)
 
@@ -56,7 +56,7 @@ sudo apt install gitlab-ce
 
 ## Task 5: install docker
 
-### 1）安装docker
+### 1）安装docker，按照官网操作
 ```sh
 apt install  ca-certificates  curl  gnupg  lsb-release
 mkdir -p /etc/apt/keyrings
@@ -90,14 +90,14 @@ docker run -d -p 8083:8082  --name goweb goweb # 此处虚拟机的8082端口被
 ## Task 7: push image to dockerhub
 
 ```sh
-docker login # 登陆自己的账户
+sudo docker login # 登陆自己的账户
 
 ## 上传
-docker tag goweb ganshizhong/go-web-hello-world:v0.1
-docker push ganshizhong/go-web-hello-world:v0.1
+sudo docker tag goweb ganshizhong/go-web-hello-world:v0.1
+sudo docker push ganshizhong/go-web-hello-world:v0.1
 
 ## 下载
-docker pull ganshizhong/go-web-hello-world:v0.1
+sudo docker pull ganshizhong/go-web-hello-world:v0.1
 ```
 
 ## Task 8: document the procedure in a MarkDown file
@@ -125,6 +125,8 @@ systemctl restart kubelet
 ...
 ```
 
+k8s部署应用，先登录docker，同时master单节点无法创建应用，需要如下操作
+
 ```sh
 # 
 docker login # 貌似不是从本地下载的，需要先登录
@@ -138,7 +140,7 @@ kubectl describe node demo |grep Taint
         describe node demo |grep Taint
         Taints:             <none>
 
-kubectl create deployment goweb --image=ganshizhong/go-web-hello-world:v0.1
+kubectl create deployment goweb --image=ganshizhong/go-web-hello-world:v0.1 # 创建应用
 
 # kubectl expose deployment goweb --port=31080 --type=NodePort # 修改端口类型
 kubectl edit svc goweb # 修改 goweb的配置文件
@@ -188,7 +190,7 @@ wget https://raw.githubusercontent.com/kubernetes/dashboard/v2.6.1/aio/deploy/re
 kubectl apply -f recommended.yaml
 
 
-# 修改nodePort端口，
+# 修改nodePort端口，31081
 kubectl edit svc -n kubernetes-dashboard #
 ```
 
